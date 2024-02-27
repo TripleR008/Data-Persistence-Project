@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
@@ -18,10 +19,19 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
-    
+    public Button mainMenu;
+    public Text highScoreText;
+
+
     // Start is called before the first frame update
     void Start()
     {
+        mainMenu = GameObject.Find("Main Menu").GetComponent<Button>();
+        mainMenu.onClick.AddListener(MainMenu);
+
+        highScoreText = GameObject.Find("HighScoreText").GetComponent<Text>();
+        highScoreText.text = $"High Score {Player.player.highScoreName} {Player.player.highScoreValue}";
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -72,5 +82,15 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        if (m_Points > Player.player.highScoreValue)
+        {
+            Player.player.highScoreValue = m_Points;
+            Player.player.highScoreName = Player.player.sharedName;
+            Player.player.SaveHighScore();
+        }
+    }
+    public void MainMenu()
+    { 
+        SceneManager.LoadScene(0);
     }
 }
